@@ -1,34 +1,48 @@
-import { 
-  LogIn, 
-  LayoutDashboard, 
-  FilePlus, 
-  FileText, 
-  Printer, 
-  BarChart3, 
+// src/components/sidebar-menu.tsx
+import {
+  LogIn,
+  LayoutDashboard,
+  FilePlus,
+  FileText,
+  Printer,
+  BarChart3,
   AlertCircle,
   Wrench,
-  X
-} from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from './ui/sheet';
-import { Button } from './ui/button';
+  X,
+} from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "./ui/sheet";
+import { Button } from "./ui/button";
+
+type View = "dashboard" | "printers";
 
 interface SidebarMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  onChangeView?: (view: View) => void;
 }
 
 const menuItems = [
-  { icon: LogIn, label: 'Pantalla de Login', href: '#' },
-  { icon: LayoutDashboard, label: 'Panel principal (Dashboard de incidencias)', href: '#', active: true },
-  { icon: FilePlus, label: 'Registro de incidencia', href: '#' },
-  { icon: FileText, label: 'Detalle de incidencia', href: '#' },
-  { icon: Printer, label: 'Módulo de impresoras', href: '#' },
-  { icon: BarChart3, label: 'Reportes visuales (gráficas)', href: '#' },
-  { icon: AlertCircle, label: 'Incidencias más comunes', href: '#' },
-  { icon: Wrench, label: 'Atención de Incidencia', href: '#' },
+  { id: "login", icon: LogIn, label: "Pantalla de Login" },
+  {
+    id: "dashboard",
+    icon: LayoutDashboard,
+    label: "Panel principal (Dashboard de incidencias)",
+  },
+  { id: "registro", icon: FilePlus, label: "Registro de incidencia" },
+  { id: "detalle", icon: FileText, label: "Detalle de incidencia" },
+  { id: "printers", icon: Printer, label: "Módulo de impresoras" },
+  { id: "reportes", icon: BarChart3, label: "Reportes visuales (gráficas)" },
+  { id: "comunes", icon: AlertCircle, label: "Incidencias más comunes" },
+  { id: "atencion", icon: Wrench, label: "Atención de Incidencia" },
 ];
 
-export function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
+export function SidebarMenu({ isOpen, onClose, onChangeView }: SidebarMenuProps) {
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent side="left" className="w-80 p-0">
@@ -43,27 +57,36 @@ export function SidebarMenu({ isOpen, onClose }: SidebarMenuProps) {
             Navegación principal del sistema de incidencias
           </SheetDescription>
         </SheetHeader>
-        
+
         <nav className="py-4">
-          {menuItems.map((item, index) => {
+          {menuItems.map((item) => {
             const Icon = item.icon;
+
+            const handleClick = (e: React.MouseEvent) => {
+              e.preventDefault();
+
+              if (item.id === "dashboard") {
+                onChangeView?.("dashboard");
+              } else if (item.id === "printers") {
+                onChangeView?.("printers");
+              }
+
+              onClose();
+            };
+
             return (
-              <a
-                key={index}
-                href={item.href}
-                className={`flex items-center gap-3 px-6 py-3 transition-colors ${
-                  item.active
-                    ? 'bg-blue-50 text-blue-700 border-r-4 border-blue-600'
-                    : 'text-slate-700 hover:bg-slate-50'
-                }`}
+              <button
+                key={item.id}
+                onClick={handleClick}
+                className="w-full text-left flex items-center gap-3 px-6 py-3 text-slate-700 hover:bg-slate-50 transition-colors"
               >
                 <Icon className="h-5 w-5 flex-shrink-0" />
                 <span>{item.label}</span>
-              </a>
+              </button>
             );
           })}
         </nav>
-        
+
         <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-slate-200">
           <div className="flex items-center gap-2 text-slate-600">
             <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
